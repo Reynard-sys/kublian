@@ -537,6 +537,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onNavigateTab: widget.onNavigateTab,
         ),
       ),
+      result: true, // This tells SupportFlowScreen to reset to the form!
     );
   }
 

@@ -12,6 +12,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.9,
     'totalSessions': 87,
     'availability': 'available',
+    'gender': 'Female',
     'feedbackSnippets': [
       'Very patient and non-judgmental.',
       'Helped me feel less alone.',
@@ -27,6 +28,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.7,
     'totalSessions': 53,
     'availability': 'available',
+    'gender': 'Male',
     'feedbackSnippets': [
       'Made me feel understood.',
       'Gentle and grounding presence.',
@@ -41,6 +43,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.8,
     'totalSessions': 61,
     'availability': 'available',
+    'gender': 'Female',
     'feedbackSnippets': [
       "Didn't rush me.",
       'Gave practical grounding tips.',
@@ -55,6 +58,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.6,
     'totalSessions': 39,
     'availability': 'available',
+    'gender': 'Other',
     'feedbackSnippets': [
       'Spoke from real experience.',
       'Helped me name what I was feeling.',
@@ -69,6 +73,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.9,
     'totalSessions': 112,
     'availability': 'available',
+    'gender': 'Female',
     'feedbackSnippets': [
       'Calm under pressure.',
       'Explained what was happening to my brain clearly.',
@@ -83,6 +88,7 @@ const List<Map<String, dynamic>> dummyVolunteers = [
     'rating': 4.8,
     'totalSessions': 45,
     'availability': 'available',
+    'gender': 'Male',
     'feedbackSnippets': [
       'Gave me great practical steps.',
       'Very analytical but still so warm.',
