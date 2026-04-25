@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kublian/widgets/resources/resources_header.dart';
 import 'package:kublian/widgets/resources/category_tabs.dart';
 import 'package:kublian/widgets/resources/exercises_tab.dart';
@@ -33,25 +34,23 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Pahinga Muna.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: 'Newsreader',
+                    style: GoogleFonts.newsreader(
                         color: kResTextDark,
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
                         height: 1.2),
                   ),
                   const SizedBox(height: 10),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       "This is your safe space. Let us know how you're feeling so we "
                       "can find the right companion for your heart.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: 'Plus Jakarta Sans',
+                      style: GoogleFonts.plusJakartaSans(
                           color: kResTextMid, fontSize: 13.5, height: 1.5),
                     ),
                   ),

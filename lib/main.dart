@@ -293,12 +293,12 @@ class _PlaceholderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1628),
+      backgroundColor: const Color(0xFFFCFFEE), // Matches global background kResBg
       body: Center(
         child: Text(
           'Kublian — $label\n(screen coming soon)',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Color(0xFFB8A4E8), fontSize: 18),
+          style: const TextStyle(color: Color(0xFF016A66), fontSize: 18), // Matches dark green kResPrimary
         ),
       ),
     );
