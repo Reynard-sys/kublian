@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/services/volunteer_service.dart';
+
 class SupportMatchedView extends StatelessWidget {
   final VoidCallback onStartSession;
   final Map<String, dynamic> volunteer;
@@ -106,7 +108,7 @@ class SupportMatchedView extends StatelessWidget {
                 const Icon(Icons.star, color: Colors.white, size: 12),
                 const SizedBox(width: 4),
                 Text(
-                  '${volunteer['rating'] ?? '4.8'}',
+                  VolunteerService.formatRating(volunteer),
                   style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 12,

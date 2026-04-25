@@ -18,10 +18,7 @@ class GeminiService {
     }
 
     // Using gemini-2.5-flash (intentional upgrade over MD spec of 2.0-flash)
-    _fastModel = GenerativeModel(
-      model: 'gemini-2.5-flash',
-      apiKey: _apiKey,
-    );
+    _fastModel = GenerativeModel(model: 'gemini-2.5-flash', apiKey: _apiKey);
   }
 
   bool get _isConfigured => _apiKey.trim().isNotEmpty;
@@ -29,17 +26,26 @@ class GeminiService {
   // ==========================================
   // 1. VOLUNTEER MATCHING
   // ==========================================
-  Future<String?> matchVolunteer(Map<String, dynamic> intakeForm, List<Map<String, dynamic>> volunteerPool) async {
+  Future<String?> matchVolunteer(
+    Map<String, dynamic> intakeForm,
+    List<Map<String, dynamic>> volunteerPool,
+  ) async {
     if (!_isConfigured) {
-      debugPrint('Gemini matching skipped: GEMINI_API_KEY is missing at runtime.');
+      debugPrint(
+        'Gemini matching skipped: GEMINI_API_KEY is missing at runtime.',
+      );
       return null;
     }
 
-    final poolString = volunteerPool.map((v) => 
-      "ID: ${v['id']}, Role: ${v['role']}, Gender: ${v['gender'] ?? 'Any'}, Specialties: ${v['specialtyTags'].join(', ')}, Exp: ${v['experienceTags'].join(', ')}, Rating: ${v['rating']}"
-    ).join('\n');
+    final poolString = volunteerPool
+        .map(
+          (v) =>
+              "ID: ${v['id']}, Role: ${v['role']}, Gender: ${v['gender'] ?? 'Any'}, Specialties: ${v['specialtyTags'].join(', ')}, Exp: ${v['experienceTags'].join(', ')}, Rating: ${v['rating']}",
+        )
+        .join('\n');
 
-    final prompt = """
+    final prompt =
+        """
     You are a mental health volunteer matching system for the Philippines.
     
     User Intake Form:
@@ -124,8 +130,8 @@ class GeminiService {
   // 3. HANDOVER SUMMARY (Triggered via UI Button)
   // ==========================================
   Future<String> generateSessionSummary(
-    List<Map<String, dynamic>> messages, 
-    Map<String, dynamic> volunteer
+    List<Map<String, dynamic>> messages,
+    Map<String, dynamic> volunteer,
   ) async {
     if (!_isConfigured) {
       return 'Gemini summary is unavailable because the API key is not loaded in this build.';
@@ -137,10 +143,14 @@ class GeminiService {
     }
 
     final transcript = messages
-        .map((m) => "${m['senderId'] == 'user' ? 'User' : 'Volunteer'}: ${m['text']}")
+        .map(
+          (m) =>
+              "${m['senderId'] == 'user' ? 'User' : 'Volunteer'}: ${m['text']}",
+        )
         .join('\n');
 
-    final prompt = """
+    final prompt =
+        """
     You are ${volunteer['alias']}, a ${volunteer['role']} on the Kublian app. 
     The user has explicitly ended the session.
 
@@ -160,7 +170,8 @@ class GeminiService {
 
     try {
       final response = await _fastModel.generateContent([Content.text(prompt)]);
-      return response.text?.trim() ?? "The user reached out for support and concluded the session.";
+      return response.text?.trim() ??
+          "The user reached out for support and concluded the session.";
     } catch (e, st) {
       debugPrint('Gemini Summary Error: $e');
       debugPrint('$st');
@@ -203,7 +214,10 @@ class GeminiService {
   // ==========================================
   // INTERNAL PROMPT BUILDER
   // ==========================================
-  String _buildSystemPrompt(Map<String, dynamic> volunteer, String? previousSummary) {
+  String _buildSystemPrompt(
+    Map<String, dynamic> volunteer,
+    String? previousSummary,
+  ) {
     String contextBlock = previousSummary != null && previousSummary.isNotEmpty
         ? "\nCONTEXT FROM USER'S PREVIOUS SESSION:\n\"$previousSummary\"\nKeep this context in mind to avoid making the user repeat their trauma, but do not explicitly say you read their file.\n"
         : "";

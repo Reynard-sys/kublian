@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/services/gemini_service.dart';
 import '../../core/services/session_service.dart';
+import '../../core/services/volunteer_service.dart';
 
 const _kRatingTeal = Color(0xFF016A66);
 const _kRatingCream = Color(0xFFFCFFED);
@@ -166,8 +167,10 @@ class _RatingViewState extends State<RatingView> {
                 right: -8,
                 bottom: 8,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(999),
@@ -183,7 +186,7 @@ class _RatingViewState extends State<RatingView> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${widget.volunteer['rating'] ?? '4.8'}',
+                        VolunteerService.formatRating(widget.volunteer),
                         style: const TextStyle(
                           color: _kRatingTeal,
                           fontSize: 12,
@@ -250,8 +253,7 @@ class _RatingViewState extends State<RatingView> {
   }
 
   Widget _buildRatingCard() {
-    final canSubmit =
-        !_isSubmitting && !_hasSubmitted && _selectedRating > 0;
+    final canSubmit = !_isSubmitting && !_hasSubmitted && _selectedRating > 0;
 
     return Container(
       width: double.infinity,
@@ -415,9 +417,9 @@ class _RatingViewState extends State<RatingView> {
       }
 
       setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to submit rating: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Unable to submit rating: $e')));
     }
   }
 
@@ -427,11 +429,12 @@ class _RatingViewState extends State<RatingView> {
   }
 
   List<String> get _displayTags {
-    final tags = (widget.volunteer['specialtyTags'] as List<dynamic>? ?? const [])
-        .take(3)
-        .map((tag) => _humanizeTag('$tag'))
-        .where((tag) => tag.isNotEmpty)
-        .toList();
+    final tags =
+        (widget.volunteer['specialtyTags'] as List<dynamic>? ?? const [])
+            .take(3)
+            .map((tag) => _humanizeTag('$tag'))
+            .where((tag) => tag.isNotEmpty)
+            .toList();
 
     if (tags.isNotEmpty) {
       return tags;
@@ -479,10 +482,7 @@ class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const _BottomNavBar({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _BottomNavBar({required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
