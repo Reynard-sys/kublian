@@ -90,6 +90,10 @@ class _SupportFlowScreenState extends State<SupportFlowScreen> {
       return;
     }
 
+    // Shuffle the pool so Gemini sees candidates in a random order,
+    // encouraging dynamic random matching among equally qualified volunteers.
+    pool.shuffle();
+
     final matchedVolunteerId =
         await _geminiService.matchVolunteer(intakeForm, pool);
     if (!mounted) {

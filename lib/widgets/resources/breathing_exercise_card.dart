@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kublian/widgets/resources/resources_header.dart';
 
 class BreathingExerciseCard extends StatefulWidget {
@@ -95,15 +96,14 @@ class _BreathingExerciseCardState extends State<BreathingExerciseCard>
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.5)),
           ),
-          const Text('Breathing Exercise',
-              style: TextStyle(
-                  fontFamily: 'Newsreader',
+          Text('Breathing Exercise',
+              style: GoogleFonts.newsreader(
                   color: kResTextDark,
                   fontSize: 22,
                   fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
-          const Text('The 4-7-8 method for immediate relaxation.',
-              style: TextStyle(fontFamily: 'Plus Jakarta Sans', color: kResTextMid, fontSize: 13)),
+          Text('The 4-7-8 method for immediate relaxation.',
+              style: GoogleFonts.plusJakartaSans(color: kResTextMid, fontSize: 13)),
           const SizedBox(height: 28),
 
           // Animated breathing circle

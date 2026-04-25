@@ -18,7 +18,7 @@ class GeminiService {
     }
 
     // Using gemini-2.5-flash (intentional upgrade over MD spec of 2.0-flash)
-    _fastModel = GenerativeModel(model: 'gemini-3.1-pro', apiKey: _apiKey);
+    _fastModel = GenerativeModel(model: 'gemini-2.5-flash', apiKey: _apiKey);
   }
 
   bool get _isConfigured => _apiKey.trim().isNotEmpty;
@@ -40,7 +40,7 @@ class GeminiService {
     final poolString = volunteerPool
         .map(
           (v) =>
-              "ID: ${v['id']}, Role: ${v['role']}, Specialties: ${v['specialtyTags'].join(', ')}, Exp: ${v['experienceTags'].join(', ')}, Rating: ${v['rating']}",
+              "ID: ${v['id']}, Role: ${v['role']}, Gender: ${v['gender'] ?? 'Any'}, Specialties: ${v['specialtyTags'].join(', ')}, Exp: ${v['experienceTags'].join(', ')}, Rating: ${v['rating']}",
         )
         .join('\n');
 
@@ -52,12 +52,14 @@ class GeminiService {
     - Mood score (1-10): ${intakeForm['moodScore']}
     - Situation tags: ${intakeForm['situationTags']?.join(', ')}
     - Support type needed: ${intakeForm['supportType']}
+    - Gender preference: ${intakeForm['genderPreference'] ?? 'Any'}
     - Previous session summary context: ${intakeForm['lastSessionSummary'] ?? 'None'}
 
     Available volunteers:
     $poolString
 
-    Match the user to the single most suitable volunteer. 
+    Match the user to the most suitable volunteer based on their situation tags, support type, and gender preference. 
+    If multiple volunteers are equally suitable, please randomly select one of them so the user gets varied matches.
     Return ONLY the exact volunteer ID string (e.g., v_003). Do not explain.
     """;
 
@@ -104,7 +106,7 @@ class GeminiService {
     try {
       // Create a temporary model instance with the injected system instructions
       final personaModel = GenerativeModel(
-        model: 'gemini-3.1-pro',
+        model: 'gemini-2.5-flash',
         apiKey: _apiKey,
         systemInstruction: Content.system(systemPrompt),
       );

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../core/services/gemini_service.dart';
 import '../core/services/session_service.dart';
 import '../core/services/user_service.dart';
+import '../core/services/volunteer_service.dart';
 import '../dummy_data/volunteers.dart';
 import 'support/rating_view.dart';
 
@@ -307,7 +308,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${_volunteer['rating'] ?? '4.8'}',
+                      VolunteerService.formatRating(_volunteer),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -537,6 +538,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onNavigateTab: widget.onNavigateTab,
         ),
       ),
+      result: true, // This tells SupportFlowScreen to reset to the form!
     );
   }
 

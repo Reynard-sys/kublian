@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/services/volunteer_service.dart';
+
 class SupportMatchedView extends StatelessWidget {
   final VoidCallback onStartSession;
   final Map<String, dynamic> volunteer;
@@ -44,10 +46,10 @@ class SupportMatchedView extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             _buildMetaLine(),
-            style: const TextStyle(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1A2E2E),
+              color: const Color(0xFF1A2E2E),
             ),
           ),
           const SizedBox(height: 20),
@@ -106,8 +108,8 @@ class SupportMatchedView extends StatelessWidget {
                 const Icon(Icons.star, color: Colors.white, size: 12),
                 const SizedBox(width: 4),
                 Text(
-                  '${volunteer['rating'] ?? '4.8'}',
-                  style: const TextStyle(
+                  VolunteerService.formatRating(volunteer),
+                  style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -141,8 +143,8 @@ class SupportMatchedView extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          color: Color(0xFF1A2E2E),
+        style: GoogleFonts.plusJakartaSans(
+          color: const Color(0xFF1A2E2E),
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
@@ -177,9 +179,9 @@ class SupportMatchedView extends StatelessWidget {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : const Text(
+              : Text(
                   'Start Session',
-                  style: TextStyle(
+                  style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
