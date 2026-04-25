@@ -4,7 +4,6 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/foundation.dart';
 
 class GeminiService {
-  late final GenerativeModel _chatModel;
   late final GenerativeModel _fastModel;
 
   GeminiService() {
@@ -14,12 +13,7 @@ class GeminiService {
       debugPrint('WARNING: Gemini API Key is missing.');
     }
 
-    // We use flash for standard operations to ensure fast MVP response times
-    _chatModel = GenerativeModel(
-      model: 'gemini-2.5-flash', 
-      apiKey: apiKey,
-    );
-    
+    // Using gemini-2.5-flash (intentional upgrade over MD spec of 2.0-flash)
     _fastModel = GenerativeModel(
       model: 'gemini-2.5-flash',
       apiKey: apiKey,
