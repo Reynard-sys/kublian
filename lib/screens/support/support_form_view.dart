@@ -293,7 +293,7 @@ class _SupportFormViewState extends State<SupportFormView> {
   Map<String, dynamic> _buildIntakeForm() {
     return {
       'moodScore': (_heartValue * 9).round() + 1,
-      'situationTags': [_normalizeTag(_selectedMind)],
+      'situationTags': _selectedMinds.map(_normalizeTag).toList(),
       'genderPreference': _selectedGender,
       'supportType': _selectedHelp,
       'lastSessionSummary': null,
