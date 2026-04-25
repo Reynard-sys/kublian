@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // ─── Shared Design Tokens ────────────────────────────────────────────────────
 // These constants are re-exported from this file so any widget/screen can do:
@@ -31,15 +32,14 @@ class ResourcesHeader extends StatelessWidget {
         right: 24,
         bottom: 16,
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Icon(Icons.shield_outlined, color: Colors.white, size: 24),
-          SizedBox(width: 8),
+          const Icon(Icons.shield_outlined, color: Colors.white, size: 24),
+          const SizedBox(width: 8),
           Text(
             'Kublian',
-            style: TextStyle(
-              fontFamily: 'Newsreader',
+            style: GoogleFonts.newsreader(
               color: Colors.white,
               fontSize: 22,
               fontStyle: FontStyle.italic,

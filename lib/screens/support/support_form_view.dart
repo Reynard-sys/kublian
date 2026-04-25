@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SupportFormView extends StatefulWidget {
   final VoidCallback onSubmit;
@@ -16,7 +17,7 @@ class SupportFormView extends StatefulWidget {
 
 class _SupportFormViewState extends State<SupportFormView> {
   double _heartValue = 0.5;
-  String _selectedMind = 'Relationships';
+  Set<String> _selectedMinds = {'Relationships'};
   String _selectedGender = 'Female';
   String _selectedHelp = 'I just want to vent';
 
@@ -43,23 +44,22 @@ class _SupportFormViewState extends State<SupportFormView> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Pahinga Muna.',
-            style: TextStyle(
-              fontFamily: 'Newsreader',
+            style: GoogleFonts.newsreader(
               fontSize: 32,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1A2E2E),
+              color: const Color(0xFF1A2E2E),
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'This is your safe space. Let us know how you\'re feeling so we can find the right companion for your heart.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1A2E2E),
+              color: const Color(0xFF1A2E2E),
               height: 1.4,
             ),
           ),
@@ -103,14 +103,14 @@ class _SupportFormViewState extends State<SupportFormView> {
                 Center(
                   child: InkWell(
                     onTap: widget.onNavigateToLibrary,
-                    child: const Text.rich(
+                    child: Text.rich(
                       TextSpan(
                         text: 'Not ready to talk yet? ',
-                        style: TextStyle(color: Color(0xFF1A2E2E), fontSize: 11, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.plusJakartaSans(color: const Color(0xFF1A2E2E), fontSize: 11, fontWeight: FontWeight.w500),
                         children: [
                           TextSpan(
                             text: 'Explore other\nresources',
-                            style: TextStyle(decoration: TextDecoration.underline),
+                            style: GoogleFonts.plusJakartaSans(decoration: TextDecoration.underline),
                           ),
                         ],
                       ),
@@ -129,11 +129,10 @@ class _SupportFormViewState extends State<SupportFormView> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontFamily: 'Newsreader',
+      style: GoogleFonts.newsreader(
         fontSize: 22,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF1A2E2E),
+        color: const Color(0xFF1A2E2E),
       ),
     );
   }
@@ -178,9 +177,17 @@ class _SupportFormViewState extends State<SupportFormView> {
   }
 
   Widget _buildMindChip(String label) {
-    final isSelected = _selectedMind == label;
+    final isSelected = _selectedMinds.contains(label);
     return GestureDetector(
-      onTap: () => setState(() => _selectedMind = label),
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            _selectedMinds.remove(label);
+          } else {
+            _selectedMinds.add(label);
+          }
+        });
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
@@ -206,13 +213,13 @@ class _SupportFormViewState extends State<SupportFormView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFB9C4B7) : const Color(0xFFB9C4B7).withValues(alpha: 0.6), // Active is darker grey-green
+          color: isSelected ? const Color(0xFFD05036) : const Color(0xFFB9C4B7).withValues(alpha: 0.6), // Active is red/orange like mind options
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? const Color(0xFF1A2E2E) : const Color(0xFF1A2E2E),
+            color: isSelected ? Colors.white : const Color(0xFF1A2E2E),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kublian/widgets/resources/resources_header.dart';
 
 class GroundingExerciseCard extends StatelessWidget {
@@ -33,9 +34,8 @@ class GroundingExerciseCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.5)),
           ),
-          const Text('5-4-3-2-1\nGrounding',
-              style: TextStyle(
-                  fontFamily: 'Newsreader',
+          Text('5-4-3-2-1\nGrounding',
+              style: GoogleFonts.newsreader(
                   color: kResTextDark,
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
@@ -120,8 +120,7 @@ class _GroundingStep extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(tip,
-                    style: const TextStyle(
-                        fontFamily: 'Plus Jakarta Sans', color: kResTextMid, fontSize: 12, height: 1.4)),
+                    style: GoogleFonts.plusJakartaSans(color: kResTextMid, fontSize: 12, height: 1.4)),
               ],
             ),
           ),
