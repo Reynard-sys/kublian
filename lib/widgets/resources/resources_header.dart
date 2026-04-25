@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 //   import 'package:kublian/widgets/resources/resources_header.dart';
 // and get both the widget AND the tokens in one import.
 
-const Color kResBg = Color(0xFFF5F0E8);
-const Color kResPrimary = Color(0xFF1D5050);
+const Color kResBg = Color(0xFFFCFFEE);
+const Color kResPrimary = Color(0xFF016A66);
 const Color kResPrimaryLight = Color(0xFF2E7070);
 const Color kResSurface = Color(0xFFFFFFFF);
 const Color kResAccent = Color(0xFFCC4438);
@@ -24,65 +24,28 @@ class ResourcesHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: kResPrimary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
-      ),
+      color: kResPrimary,
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 16,
         left: 24,
         right: 24,
-        bottom: 28,
+        bottom: 16,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.location_on_outlined,
-                        color: Colors.white70, size: 14),
-                    SizedBox(width: 4),
-                    Text('resources',
-                        style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            letterSpacing: 1.2)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Pahinga Muna.',
-            textAlign: TextAlign.center,
+          Icon(Icons.shield_outlined, color: Colors.white, size: 24),
+          SizedBox(width: 8),
+          Text(
+            'Kublian',
             style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.w700,
-                height: 1.2),
+              fontFamily: 'Newsreader',
+              color: Colors.white,
+              fontSize: 22,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 10),
-          const Text(
-            "This is your safe space. Let us know how you're feeling so we "
-            "can find the right companion for your heart.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white70, fontSize: 13.5, height: 1.5),
-          ),
-          const SizedBox(height: 8),
         ],
       ),
     );

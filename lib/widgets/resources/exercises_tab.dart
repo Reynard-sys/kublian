@@ -23,9 +23,6 @@ class _ExercisesTabState extends State<ExercisesTab> {
   void _go(int delta) {
     final next = (_page + delta).clamp(0, 1);
     if (next == _page) return;
-    _pageController.animateToPage(next,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut);
     setState(() => _page = next);
   }
 
@@ -33,50 +30,44 @@ class _ExercisesTabState extends State<ExercisesTab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-          child: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: const [
-              BreathingExerciseCard(),
-              GroundingExerciseCard(),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-          child: Row(
-            children: [
-              Row(
-                children: List.generate(
-                    2,
-                    (i) => AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.only(right: 6),
-                          width: _page == i ? 20 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color:
-                                _page == i ? kResPrimary : kResChipBg,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        )),
-              ),
-              const Spacer(),
-              _ArrowButton(
-                icon: Icons.arrow_back_rounded,
-                onTap: () => _go(-1),
-                enabled: _page > 0,
-              ),
-              const SizedBox(width: 10),
-              _ArrowButton(
-                icon: Icons.arrow_forward_rounded,
-                onTap: () => _go(1),
-                enabled: _page < 1,
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFFFF),
+            borderRadius: BorderRadius.circular(48),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: _page == 0 ? const BreathingExerciseCard(key: ValueKey('breathe')) : const GroundingExerciseCard(key: ValueKey('ground')),
+          ),
         ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _ArrowButton(
+              icon: Icons.arrow_back_rounded,
+              onTap: () => _go(-1),
+              enabled: _page > 0,
+            ),
+            const SizedBox(width: 16),
+            _ArrowButton(
+              icon: Icons.arrow_forward_rounded,
+              onTap: () => _go(1),
+              enabled: _page < 1,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }

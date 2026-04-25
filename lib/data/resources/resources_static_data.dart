@@ -1,6 +1,7 @@
 // All imports use package: paths — safe for any file location, no relative guessing.
 import 'package:kublian/models/resources/hotline.dart';
 import 'package:kublian/models/resources/facility.dart';
+import 'package:kublian/models/resources/professional.dart';
 
 const List<Hotline> kEmergencyHotlines = [
   Hotline(name: 'DOH iCARE', number: '1553'),
@@ -11,32 +12,48 @@ const List<Hotline> kEmergencyHotlines = [
 
 const List<Facility> kNearbyFacilities = [
   Facility(
-    name: 'National Center for Mental Health',
-    address: 'Nueve de Febrero St, Mandaluyong',
-    tags: ['Public', 'Psychiatric'],
-    distance: '1.2 KM',
+    name: 'St. Luke\'s Medical Center',
+    address: 'E. Rodriguez Sr. Ave, Quezon City',
+    tags: ['Psychiatric Unit'],
+    distance: '0.8 KM',
     isOpen24h: true,
   ),
   Facility(
-    name: 'Philippine General Hospital',
-    address: 'Taft Ave, Ermita, Manila',
-    tags: ['Public', 'Psychiatric Unit'],
-    distance: '2.4 KM',
-    isOpen24h: true,
-  ),
-  Facility(
-    name: 'Makati Medical Center',
-    address: '2 Amorsolo St, Legazpi Village, Makati',
-    tags: ['Private', 'Specialized'],
-    distance: '3.1 KM',
+    name: 'Philippine Heart Center',
+    address: 'East Avenue, Diliman',
+    tags: ['Public', 'Specialized'],
+    distance: '1.5 KM',
     isOpen24h: false,
   ),
   Facility(
-    name: 'The Medical City',
-    address: 'Ortigas Ave, Pasig',
-    tags: ['Private', 'Psychiatric'],
-    distance: '3.8 KM',
+    name: 'Metropolitan Medical',
+    address: 'G. Masangkay St, Manila',
+    tags: ['Counseling', 'Private'],
+    distance: '2.3 KM',
     isOpen24h: false,
+  ),
+];
+
+const List<Professional> kNearbyProfessionals = [
+  Professional(
+    name: 'Dr. Nairobi Dy',
+    title: 'MD - Pediatrics',
+    experience: '21 yrs of experience',
+    clinicName: 'Dy Clinic, Binondo, Manila',
+    hasF2f: true,
+    hasVirtual: true,
+    schedule: 'Mon, 12:00 am - 11:59 pm (Walk-in)',
+    hmos: 'Kaiser International, Maxicare',
+  ),
+  Professional(
+    name: 'Dr. Nairobi Dy',
+    title: 'MD - Pediatrics',
+    experience: '21 yrs of experience',
+    clinicName: 'Dy Clinic, Binondo, Manila',
+    hasF2f: true,
+    hasVirtual: true,
+    schedule: 'Mon, 12:00 am - 11:59 pm (Walk-in)',
+    hmos: 'Kaiser International, Maxicare',
   ),
 ];
 

@@ -166,16 +166,89 @@ class _AppShellState extends State<_AppShell> {
           ResourcesScreen(), // Library tab → Resources screen
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: _CustomBottomNav(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: kResPrimary,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white54,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        items: _items,
+      ),
+    );
+  }
+}
+
+class _CustomBottomNav extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const _CustomBottomNav({required this.currentIndex, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      (icon: Icons.home_outlined, activeIcon: Icons.home_outlined, label: 'Home'),
+      (icon: Icons.menu_book_outlined, activeIcon: Icons.menu_book_outlined, label: 'Journal'),
+      (icon: Icons.forum_outlined, activeIcon: Icons.forum_outlined, label: 'Support'),
+      (icon: Icons.local_library_outlined, activeIcon: Icons.local_library_outlined, label: 'Library'),
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF042F2E),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(48),
+          topRight: Radius.circular(48),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 30,
+            spreadRadius: 5,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(items.length, (index) {
+            final isSelected = currentIndex == index;
+            final item = items[index];
+            return GestureDetector(
+              onTap: () => onTap(index),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFF115E59) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(32),
+                  border: isSelected ? Border.all(color: const Color(0xFF14B8A6).withValues(alpha: 0.3), width: 1) : null,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isSelected ? item.activeIcon : item.icon,
+                      color: isSelected ? const Color(0xFFCCFBF1) : const Color(0xFF0F766E),
+                      size: 24,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.label,
+                      style: TextStyle(
+                        color: isSelected ? const Color(0xFFCCFBF1) : const Color(0xFF0F766E),
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontFamily: 'Newsreader',
+                        fontSize: 13,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -188,7 +261,7 @@ class _SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xFF1A1628),
+      backgroundColor: Color(0xFFFCFEEF),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

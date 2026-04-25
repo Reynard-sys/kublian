@@ -81,7 +81,7 @@ class _BreathingExerciseCardState extends State<BreathingExerciseCard>
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,12 +97,13 @@ class _BreathingExerciseCardState extends State<BreathingExerciseCard>
           ),
           const Text('Breathing Exercise',
               style: TextStyle(
+                  fontFamily: 'Newsreader',
                   color: kResTextDark,
                   fontSize: 22,
                   fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           const Text('The 4-7-8 method for immediate relaxation.',
-              style: TextStyle(color: kResTextMid, fontSize: 13)),
+              style: TextStyle(fontFamily: 'Plus Jakarta Sans', color: kResTextMid, fontSize: 13)),
           const SizedBox(height: 28),
 
           // Animated breathing circle
