@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SupportMatchedView extends StatelessWidget {
   final VoidCallback onStartSession;
@@ -14,23 +15,22 @@ class SupportMatchedView extends StatelessWidget {
           const SizedBox(height: 60),
           _buildAvatar(),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'QuietPine',
-            style: TextStyle(
-              fontFamily: 'Newsreader',
+            style: GoogleFonts.newsreader(
               fontSize: 42,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF114D4D),
+              color: const Color(0xFF114D4D),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Peer Volunteer since 2022',
-            style: TextStyle(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1A2E2E),
+              color: const Color(0xFF1A2E2E),
             ),
           ),
           const SizedBox(height: 20),
@@ -78,14 +78,14 @@ class SupportMatchedView extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white, width: 2),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.star, color: Colors.white, size: 12),
-                SizedBox(width: 4),
+                const Icon(Icons.star, color: Colors.white, size: 12),
+                const SizedBox(width: 4),
                 Text(
                   '4.8',
-                  style: TextStyle(
+                  style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -121,8 +121,8 @@ class SupportMatchedView extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          color: Color(0xFF1A2E2E),
+        style: GoogleFonts.plusJakartaSans(
+          color: const Color(0xFF1A2E2E),
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
@@ -147,10 +147,10 @@ class SupportMatchedView extends StatelessWidget {
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'Start Session',
-            style: TextStyle(
+            style: GoogleFonts.plusJakartaSans(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,

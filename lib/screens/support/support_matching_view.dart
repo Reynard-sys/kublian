@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SupportMatchingView extends StatefulWidget {
   final VoidCallback onMatchFound;
@@ -42,26 +43,25 @@ class _SupportMatchingViewState extends State<SupportMatchingView>
           const SizedBox(height: 40),
           _buildPulsingHeart(),
           const SizedBox(height: 60),
-          const Text(
+          Text(
             'Finding someone who\nunderstands...',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Newsreader',
+            style: GoogleFonts.newsreader(
               fontSize: 28,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF114D4D),
+              color: const Color(0xFF114D4D),
               height: 1.2,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Gemini is matching you with a peer\nsupporter based on your current\nfeelings.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF1A2E2E),
+              color: const Color(0xFF1A2E2E),
               height: 1.5,
             ),
           ),
@@ -148,26 +148,26 @@ class _SupportMatchingViewState extends State<SupportMatchingView>
             child: const Icon(Icons.air, color: Color(0xFF114D4D), size: 24),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'PRACTICE PAHINGA',
-                  style: TextStyle(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF114D4D),
+                    color: const Color(0xFF114D4D),
                     letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   'Focus on your breath while we find your match. You are in a safe space.',
-                  style: TextStyle(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF1A2E2E),
+                    color: const Color(0xFF1A2E2E),
                     height: 1.4,
                   ),
                 ),
