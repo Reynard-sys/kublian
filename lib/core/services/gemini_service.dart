@@ -24,10 +24,17 @@ class GeminiService {
     );
   }
 
+  bool get _isConfigured => _apiKey.trim().isNotEmpty;
+
   // ==========================================
   // 1. VOLUNTEER MATCHING
   // ==========================================
   Future<String?> matchVolunteer(Map<String, dynamic> intakeForm, List<Map<String, dynamic>> volunteerPool) async {
+    if (!_isConfigured) {
+      debugPrint('Gemini matching skipped: GEMINI_API_KEY is missing at runtime.');
+      return null;
+    }
+
     final poolString = volunteerPool.map((v) => 
       "ID: ${v['id']}, Role: ${v['role']}, Specialties: ${v['specialtyTags'].join(', ')}, Exp: ${v['experienceTags'].join(', ')}, Rating: ${v['rating']}"
     ).join('\n');
@@ -51,8 +58,9 @@ class GeminiService {
     try {
       final response = await _fastModel.generateContent([Content.text(prompt)]);
       return response.text?.trim();
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('Gemini Matching Error: $e');
+      debugPrint('$st');
       return null; // Handle fallback in your calling logic
     }
   }
@@ -65,6 +73,10 @@ class GeminiService {
     Map<String, dynamic> volunteer,
     String? previousSummary,
   ) async {
+    if (!_isConfigured) {
+      return _missingKeyMessage;
+    }
+
     final systemPrompt = _buildSystemPrompt(volunteer, previousSummary);
 
     if (messages.isEmpty) {
@@ -99,9 +111,10 @@ class GeminiService {
       );
 
       return response.text ?? "I'm here for you.";
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('Gemini Chat Error: $e');
-      return "Sorry, nagkakaroon ako ng slight connection issue. Dito lang ako, please give me a moment.";
+      debugPrint('$st');
+      return _friendlyChatError(e);
     }
   }
 
@@ -112,6 +125,10 @@ class GeminiService {
     List<Map<String, dynamic>> messages, 
     Map<String, dynamic> volunteer
   ) async {
+    if (!_isConfigured) {
+      return 'Gemini summary is unavailable because the API key is not loaded in this build.';
+    }
+
     // If the user ended immediately without talking, return a default state.
     if (messages.isEmpty) {
       return "The user initiated a session but ended it before any conversation took place.";
@@ -142,10 +159,43 @@ class GeminiService {
     try {
       final response = await _fastModel.generateContent([Content.text(prompt)]);
       return response.text?.trim() ?? "The user reached out for support and concluded the session.";
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('Gemini Summary Error: $e');
+      debugPrint('$st');
       return "Session completed but summary generation failed.";
     }
+  }
+
+  String get _missingKeyMessage =>
+      'Gemini is not configured in this build yet. Run the app with '
+      '--dart-define-from-file=secrets/gemini.local.json.';
+
+  String _friendlyChatError(Object error) {
+    final message = error.toString().toLowerCase();
+
+    if (message.contains('api key') ||
+        message.contains('api_key') ||
+        message.contains('permission') ||
+        message.contains('unauthorized') ||
+        message.contains('401') ||
+        message.contains('403')) {
+      return 'May issue sa Gemini API key or project permissions. Check your key and Google AI project access.';
+    }
+
+    if (message.contains('socketexception') ||
+        message.contains('failed host lookup') ||
+        message.contains('network') ||
+        message.contains('connection')) {
+      return 'Mukhang walang internet connection si Gemini right now. Check the phone network and try again.';
+    }
+
+    if (message.contains('model') ||
+        message.contains('not found') ||
+        message.contains('404')) {
+      return 'May issue sa Gemini model configuration. Check the model name and API access.';
+    }
+
+    return 'May issue sa Gemini request right now. Check the debug logs for the exact error and try again.';
   }
 
   // ==========================================
