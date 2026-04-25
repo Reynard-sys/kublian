@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../dummy_data/volunteers.dart';
 
 class VolunteerService {
@@ -13,12 +14,11 @@ class VolunteerService {
 
   /// Fetches all available volunteers from Firestore, excluding [blockedIds].
   ///
-  /// Falls back to [dummyVolunteers] automatically if:
-  /// - Firestore returns an empty list (collection not yet seeded)
-  /// - A network/permission error occurs
+  /// Falls back to [dummyVolunteers] only when [allowFallback] is true.
   Future<List<Map<String, dynamic>>> getAvailableVolunteers(
-    List<String> blockedIds,
-  ) async {
+    List<String> blockedIds, {
+    bool allowFallback = true,
+  }) async {
     try {
       final snapshot = await _firestore
           .collection('volunteers')
@@ -31,13 +31,31 @@ class VolunteerService {
           .toList();
 
       if (volunteers.isEmpty) {
-        debugPrint('VolunteerService: Firestore returned empty — using dummy data.');
+        if (!allowFallback) {
+          debugPrint(
+            'VolunteerService: Firestore returned empty and fallback is disabled.',
+          );
+          return <Map<String, dynamic>>[];
+        }
+
+        debugPrint(
+          'VolunteerService: Firestore returned empty; using dummy data.',
+        );
         return _applyBlockList(dummyVolunteers, blockedIds);
       }
 
       return volunteers;
     } catch (e) {
-      debugPrint('VolunteerService.getAvailableVolunteers error: $e — falling back to dummy data.');
+      if (!allowFallback) {
+        debugPrint(
+          'VolunteerService.getAvailableVolunteers error: $e; fallback disabled.',
+        );
+        return <Map<String, dynamic>>[];
+      }
+
+      debugPrint(
+        'VolunteerService.getAvailableVolunteers error: $e; falling back to dummy data.',
+      );
       return _applyBlockList(dummyVolunteers, blockedIds);
     }
   }
@@ -51,12 +69,13 @@ class VolunteerService {
   Future<Map<String, dynamic>?> getVolunteerById(String id) async {
     try {
       final doc = await _firestore.collection('volunteers').doc(id).get();
-      if (doc.exists) return doc.data();
+      if (doc.exists) {
+        return doc.data();
+      }
     } catch (e) {
       debugPrint('VolunteerService.getVolunteerById error: $e');
     }
 
-    // Fallback to local dummy data
     return dummyVolunteers.cast<Map<String, dynamic>?>().firstWhere(
           (v) => v?['id'] == id,
           orElse: () => dummyVolunteers.isNotEmpty ? dummyVolunteers.first : null,
@@ -67,17 +86,19 @@ class VolunteerService {
   // FALLBACK HELPER
   // ==========================================
 
-  /// Filters the Gemini fallback volunteer. Used when matching returns an
-  /// ID that doesn't match any in the pool — returns the highest-rated
-  /// available volunteer not in the block list.
+  /// Returns the highest-rated eligible volunteer from the provided pool.
   Map<String, dynamic>? highestRatedFallback(
     List<Map<String, dynamic>> pool,
     List<String> blockedIds,
   ) {
     final eligible = _applyBlockList(pool, blockedIds);
-    if (eligible.isEmpty) return null;
-    eligible.sort((a, b) =>
-        (b['rating'] as num).compareTo(a['rating'] as num));
+    if (eligible.isEmpty) {
+      return null;
+    }
+
+    eligible.sort(
+      (a, b) => (b['rating'] as num).compareTo(a['rating'] as num),
+    );
     return eligible.first;
   }
 
@@ -86,9 +107,11 @@ class VolunteerService {
     List<String> blockedIds,
   ) {
     return volunteers
-        .where((v) =>
-            v['availability'] == 'available' &&
-            !blockedIds.contains(v['id']))
+        .where(
+          (v) =>
+              v['availability'] == 'available' &&
+              !blockedIds.contains(v['id']),
+        )
         .toList();
   }
 }

@@ -4,13 +4,14 @@ import 'package:intl/intl.dart';
 
 import '../core/services/gemini_service.dart';
 import '../core/services/session_service.dart';
+import '../core/services/user_service.dart';
 import '../dummy_data/volunteers.dart';
+import 'support/rating_view.dart';
 
 const _kChatTeal = Color(0xFF016A66);
 const _kChatCream = Color(0xFFFCFFED);
 const _kChatSurface = Color(0xFFFBFFE6);
 const _kChatInk = Color(0xFF1A2B1C);
-const _kChatMuted = Color(0xFF4A5A4C);
 const _kChatAlert = Color(0xFFD05036);
 
 class ChatScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class ChatScreen extends StatefulWidget {
   final String? previousSummary;
   final String? sessionId;
   final String? userId;
+  final ValueChanged<int>? onNavigateTab;
   final VoidCallback? onBack;
   final VoidCallback? onSessionEnded;
 
@@ -29,6 +31,7 @@ class ChatScreen extends StatefulWidget {
     this.previousSummary,
     this.sessionId,
     this.userId,
+    this.onNavigateTab,
     this.onBack,
     this.onSessionEnded,
   });
@@ -42,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final DateFormat _timeFormat = DateFormat('h:mm a');
   final GeminiService _geminiService = GeminiService();
+  final UserService _userService = UserService();
 
   late final SessionService _sessionService;
   late final Map<String, dynamic> _volunteer;
@@ -50,6 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool _isReplying = false;
   bool _isEndingSession = false;
+  bool _isHardEnding = false;
   bool _hasEndedSession = false;
   int _escalationLevel = 0;
 
@@ -162,33 +167,61 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
         const Spacer(),
-        TextButton.icon(
-          onPressed:
-              _isEndingSession || _hasEndedSession ? null : _handleEndSession,
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.white.withOpacity(0.14),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(999),
-            ),
-          ),
-          icon: _isEndingSession
-              ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : const Icon(Icons.close_rounded, size: 16),
-          label: const Text(
-            'End Session',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
+        _buildSessionEndButton(
+          label: 'Soft End',
+          icon: Icons.flag_outlined,
+          backgroundColor: Colors.white,
+          foregroundColor: _kChatTeal,
+          showProgress: _isEndingSession && !_isHardEnding,
+          onPressed: _handleSoftEndSession,
+        ),
+        const SizedBox(width: 8),
+        _buildSessionEndButton(
+          label: 'Hard End',
+          icon: Icons.close_rounded,
+          backgroundColor: _kChatAlert,
+          foregroundColor: Colors.white,
+          showProgress: _isEndingSession && _isHardEnding,
+          onPressed: _handleHardEndSession,
         ),
       ],
+    );
+  }
+
+  Widget _buildSessionEndButton({
+    required String label,
+    required IconData icon,
+    required Color backgroundColor,
+    required Color foregroundColor,
+    required bool showProgress,
+    required VoidCallback onPressed,
+  }) {
+    return TextButton.icon(
+      onPressed: _isEndingSession || _hasEndedSession ? null : onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: foregroundColor,
+        backgroundColor: backgroundColor,
+        disabledForegroundColor: foregroundColor.withOpacity(0.7),
+        disabledBackgroundColor: backgroundColor.withOpacity(0.7),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999),
+        ),
+      ),
+      icon: showProgress
+          ? SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+              ),
+            )
+          : Icon(icon, size: 15),
+      label: Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      ),
     );
   }
 
@@ -464,36 +497,18 @@ class _ChatScreenState extends State<ChatScreen> {
     Navigator.of(context).maybePop();
   }
 
-  Future<void> _handleEndSession() async {
+  Future<void> _handleSoftEndSession() async {
     if (_isEndingSession || _hasEndedSession) {
       return;
     }
 
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('End this session?'),
-              content: const Text(
-                'The conversation will close and the handover summary will be prepared.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: _kChatAlert,
-                  ),
-                  child: const Text('End Session'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
+    final confirmed = await _confirmEndDialog(
+      title: 'Soft end this session?',
+      message:
+          'This closes the session gently, prepares a handover summary, and brings the user to the rating screen.',
+      actionLabel: 'Soft End',
+      actionColor: _kChatTeal,
+    );
 
     if (!confirmed || !mounted) {
       return;
@@ -501,9 +516,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       _isEndingSession = true;
+      _isHardEnding = false;
     });
 
-    final summary = await _generateSessionSummary();
+    final summaryId = await _performSoftEnd();
     if (!mounted) {
       return;
     }
@@ -513,23 +529,91 @@ class _ChatScreenState extends State<ChatScreen> {
       _hasEndedSession = true;
     });
 
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return _SessionSummarySheet(
-          summary: summary,
-          volunteerAlias: _volunteerAlias,
-        );
-      },
+    Navigator.of(context).pushReplacement<bool, bool>(
+      MaterialPageRoute<bool>(
+        builder: (context) => RatingView(
+          volunteer: _volunteer,
+          summaryId: summaryId,
+          onNavigateTab: widget.onNavigateTab,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleHardEndSession() async {
+    if (_isEndingSession || _hasEndedSession) {
+      return;
+    }
+
+    final confirmed = await _confirmEndDialog(
+      title: 'Hard end this session?',
+      message:
+          'This closes the session immediately and skips the soft-end rating flow.',
+      actionLabel: 'Hard End',
+      actionColor: _kChatAlert,
     );
 
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _isEndingSession = true;
+      _isHardEnding = true;
+    });
+
+    await _performHardEnd();
     if (!mounted) {
       return;
     }
 
-    widget.onSessionEnded?.call();
+    setState(() {
+      _isEndingSession = false;
+      _hasEndedSession = true;
+    });
+
+    await _showHardEndActions();
+    if (!mounted) {
+      return;
+    }
+
+    if (widget.onSessionEnded != null) {
+      widget.onSessionEnded!.call();
+      return;
+    }
+
+    Navigator.of(context).pop(true);
+  }
+
+  Future<bool> _confirmEndDialog({
+    required String title,
+    required String message,
+    required String actionLabel,
+    required Color actionColor,
+  }) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: actionColor,
+                  ),
+                  child: Text(actionLabel),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   Future<void> _sendMessage() async {
@@ -622,11 +706,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<String> _generateSessionSummary() async {
-    if (!_messages.any((message) => message.senderId == 'user')) {
-      return 'The user initiated a session but ended it before any conversation took place.';
-    }
-
+  Future<String?> _performSoftEnd() async {
     if (widget.sessionId != null && widget.userId != null) {
       try {
         final result = await _sessionService.endSessionUserInitiated(
@@ -634,13 +714,107 @@ class _ChatScreenState extends State<ChatScreen> {
           userId: widget.userId!,
           volunteerData: _volunteer,
         );
-        return result.geminiSummary;
+        return result.summaryId;
       } catch (_) {
-        // Fall back to in-memory summary generation below.
+        return null;
       }
     }
 
-    return _geminiService.generateSessionSummary(_geminiHistory, _volunteer);
+    return null;
+  }
+
+  Future<void> _performHardEnd() async {
+    if (widget.sessionId == null || widget.userId == null) {
+      return;
+    }
+
+    try {
+      await _sessionService.endSessionForce(
+        sessionId: widget.sessionId!,
+        userId: widget.userId!,
+      );
+    } catch (_) {
+      // Keep the local flow responsive even when Firestore writes fail.
+    }
+  }
+
+  Future<void> _showHardEndActions() async {
+    if (widget.userId == null) {
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      builder: (context) {
+        return _HardEndActionsSheet(
+          volunteerAlias: _volunteerAlias,
+          onReport: () => _applyHardEndAction(
+            report: true,
+            block: false,
+          ),
+          onBlock: () => _applyHardEndAction(
+            report: false,
+            block: true,
+          ),
+          onReportAndBlock: () => _applyHardEndAction(
+            report: true,
+            block: true,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _applyHardEndAction({
+    required bool report,
+    required bool block,
+  }) async {
+    Navigator.of(context).pop();
+
+    final messenger = ScaffoldMessenger.of(context);
+    final volunteerId = _volunteer['id'] as String?;
+    final userId = widget.userId;
+    if (volunteerId == null || userId == null) {
+      return;
+    }
+
+    try {
+      if (report) {
+        await _sessionService.createVolunteerReport(
+          userId: userId,
+          volunteerId: volunteerId,
+          sessionId: widget.sessionId,
+          details: 'User selected ${block ? 'report_and_block' : 'report'} after hard ending the session.',
+        );
+      }
+
+      if (block) {
+        await _userService.blockVolunteer(userId, volunteerId);
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      final message = switch ((report, block)) {
+        (true, true) => 'Volunteer reported and blocked.',
+        (true, false) => 'Volunteer reported.',
+        (false, true) => 'Volunteer blocked from future matches.',
+        _ => 'Action saved.',
+      };
+
+      messenger.showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      messenger.showSnackBar(
+        SnackBar(content: Text('Unable to save action: $e')),
+      );
+    }
   }
 
   void _seedOpeningMessage() {
@@ -886,13 +1060,17 @@ class _TypingDot extends StatelessWidget {
   }
 }
 
-class _SessionSummarySheet extends StatelessWidget {
-  final String summary;
+class _HardEndActionsSheet extends StatelessWidget {
   final String volunteerAlias;
+  final VoidCallback onReport;
+  final VoidCallback onBlock;
+  final VoidCallback onReportAndBlock;
 
-  const _SessionSummarySheet({
-    required this.summary,
+  const _HardEndActionsSheet({
     required this.volunteerAlias,
+    required this.onReport,
+    required this.onBlock,
+    required this.onReportAndBlock,
   });
 
   @override
@@ -930,48 +1108,90 @@ class _SessionSummarySheet extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             const Text(
-              'Here is the handover note generated for continuity of care.',
+              'You can leave now, or take an action on this volunteer before closing the session.',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: _kChatMuted,
+                color: Color(0xFF56645A),
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 18),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _kChatCream,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                summary,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: _kChatInk,
-                  height: 1.6,
-                ),
-              ),
+            const SizedBox(height: 20),
+            _HardEndActionButton(
+              label: 'Report Volunteer',
+              color: const Color(0xFFF5E5C7),
+              textColor: _kChatInk,
+              onPressed: onReport,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 10),
+            _HardEndActionButton(
+              label: 'Block Volunteer',
+              color: const Color(0xFFE7EFEA),
+              textColor: _kChatInk,
+              onPressed: onBlock,
+            ),
+            const SizedBox(height: 10),
+            _HardEndActionButton(
+              label: 'Report and Block',
+              color: _kChatAlert,
+              textColor: Colors.white,
+              onPressed: onReportAndBlock,
+            ),
+            const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
-              child: FilledButton(
+              child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                style: FilledButton.styleFrom(
-                  backgroundColor: _kChatTeal,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: _kChatInk,
                   ),
                 ),
-                child: const Text('Close'),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HardEndActionButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color textColor;
+  final VoidCallback onPressed;
+
+  const _HardEndActionButton({
+    required this.label,
+    required this.color,
+    required this.textColor,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: textColor,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
