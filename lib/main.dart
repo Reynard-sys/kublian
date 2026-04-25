@@ -7,6 +7,7 @@ import 'screens/agreement_screen.dart';
 import 'screens/signin_screen.dart';
 import 'screens/user_form_screen.dart';
 import 'package:kublian/screens/resources_screen.dart';
+import 'package:kublian/screens/support_flow_screen.dart';
 import 'package:kublian/widgets/resources/resources_header.dart'
     show kResPrimary, kResBg;
 
@@ -159,11 +160,11 @@ class _AppShellState extends State<_AppShell> {
       backgroundColor: kResBg,
       body: IndexedStack(
         index: _index,
-        children: const [
-          _PlaceholderScreen(label: 'Home'),
-          _PlaceholderScreen(label: 'Journal'),
-          _PlaceholderScreen(label: 'Support'),
-          ResourcesScreen(), // Library tab → Resources screen
+        children: [
+          const _PlaceholderScreen(label: 'Home'),
+          const _PlaceholderScreen(label: 'Journal'),
+          SupportFlowScreen(onNavigateToLibrary: () => setState(() => _index = 3)),
+          const ResourcesScreen(), // Library tab → Resources screen
         ],
       ),
       bottomNavigationBar: _CustomBottomNav(
