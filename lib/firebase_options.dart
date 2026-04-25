@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBalJX_JV-GlRXfsKilfcjPDJNAkRKMuS4',
-    appId: '1:1018408908061:android:0d5d90789cf8c4830a5df4',
+    appId: '1:1018408908061:android:fbcdf57882ece5f80a5df4',
     messagingSenderId: '1018408908061',
     projectId: 'kublian',
     storageBucket: 'kublian.firebasestorage.app',

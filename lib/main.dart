@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kublian/core/services/user_service.dart';
 import 'firebase_options.dart';
+import 'screens/agreement_screen.dart';
+import 'screens/signin_screen.dart';
+import 'screens/user_form_screen.dart';
 import 'package:kublian/screens/resources_screen.dart';
 import 'package:kublian/widgets/resources/resources_header.dart'
     show kResPrimary, kResBg;
@@ -35,8 +39,12 @@ class KublianApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const _SplashScreen();
           }
-          // TODO: Gate on user profile exists → SignInScreen → AliasSetupScreen
-          return const _AppShell();
+          if (snapshot.hasData) {
+            // Logged in — go to main app shell
+            return _AuthenticatedFlow(key: ValueKey(snapshot.data!.uid));
+          }
+          // Not logged in — show sign-in screen
+          return const SignInScreen();
         },
       ),
     );
@@ -44,6 +52,74 @@ class KublianApp extends StatelessWidget {
 }
 
 /// Bottom navigation shell — grows as screens are built.
+class _AuthenticatedFlow extends StatefulWidget {
+  const _AuthenticatedFlow({super.key});
+
+  @override
+  State<_AuthenticatedFlow> createState() => _AuthenticatedFlowState();
+}
+
+class _AuthenticatedFlowState extends State<_AuthenticatedFlow> {
+  final _userService = UserService();
+  bool _hasAcceptedAgreement = false;
+  bool _isCheckingProfile = true;
+  bool _hasUserProfile = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileStatus();
+  }
+
+  Future<void> _loadProfileStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _isCheckingProfile = false;
+        _hasUserProfile = false;
+      });
+      return;
+    }
+
+    final exists = await _userService.userProfileExists(user.uid);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _isCheckingProfile = false;
+      _hasUserProfile = exists;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isCheckingProfile) {
+      return const _SplashScreen();
+    }
+
+    if (!_hasAcceptedAgreement) {
+      return AgreementScreen(
+        onAccepted: () {
+          setState(() => _hasAcceptedAgreement = true);
+        },
+      );
+    }
+
+    if (!_hasUserProfile) {
+      return UserFormScreen(
+        onCompleted: () {
+          setState(() => _hasUserProfile = true);
+        },
+      );
+    }
+
+    return const _AppShell();
+  }
+}
+
 class _AppShell extends StatefulWidget {
   const _AppShell();
 
@@ -55,10 +131,26 @@ class _AppShellState extends State<_AppShell> {
   int _index = 3; // Start on Library tab for demo
 
   static const _items = [
-    BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
-    BottomNavigationBarItem(icon: Icon(Icons.book_outlined), activeIcon: Icon(Icons.book), label: 'Journal'),
-    BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), activeIcon: Icon(Icons.chat_bubble), label: 'Support'),
-    BottomNavigationBarItem(icon: Icon(Icons.local_library_outlined), activeIcon: Icon(Icons.local_library), label: 'Library'),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_outlined),
+      activeIcon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.book_outlined),
+      activeIcon: Icon(Icons.book),
+      label: 'Journal',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.chat_bubble_outline),
+      activeIcon: Icon(Icons.chat_bubble),
+      label: 'Support',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.local_library_outlined),
+      activeIcon: Icon(Icons.local_library),
+      label: 'Library',
+    ),
   ];
 
   @override
@@ -88,7 +180,6 @@ class _AppShellState extends State<_AppShell> {
     );
   }
 }
-
 
 /// Splash shown while Firebase auth state is resolving.
 class _SplashScreen extends StatelessWidget {

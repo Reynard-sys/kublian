@@ -1,4 +1,4 @@
-package com.example.kublian
+package com.resisthounds.kublian
 
 import io.flutter.embedding.android.FlutterActivity
 

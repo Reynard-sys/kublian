@@ -44,12 +44,26 @@ class UserService {
     required String alias,
     required String ageGroup,
     required String cityLocation,
+    String? genderIdentity,
+    String? aboutMe,
+    String? previousHistory,
   }) async {
     await _firestore.collection('users').doc(uid).set({
       'uid': uid,
       'alias': alias,
       'ageGroup': ageGroup,
       'cityLocation': cityLocation,
+      'genderIdentity':
+          genderIdentity != null && genderIdentity.trim().isNotEmpty
+              ? genderIdentity.trim()
+              : null,
+      'aboutMe': aboutMe != null && aboutMe.trim().isNotEmpty
+          ? aboutMe.trim()
+          : null,
+      'previousHistory':
+          previousHistory != null && previousHistory.trim().isNotEmpty
+              ? previousHistory.trim()
+              : null,
       'createdAt': FieldValue.serverTimestamp(),
       'blockedVolunteers': [],
       'activeSessionId': null,
@@ -71,8 +85,13 @@ class UserService {
   /// Checks whether a user profile exists — used to decide whether to
   /// show the alias setup screen on first sign-in.
   Future<bool> userProfileExists(String uid) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
-    return doc.exists;
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      return doc.exists;
+    } catch (e) {
+      debugPrint('UserService.userProfileExists error: $e');
+      return false;
+    }
   }
 
   // ==========================================

@@ -4,19 +4,23 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/foundation.dart';
 
 class GeminiService {
+  late final String _apiKey;
   late final GenerativeModel _fastModel;
 
   GeminiService() {
-    // Ideally, pass this securely via --dart-define or flutter_dotenv
-    const apiKey = String.fromEnvironment('GEMINI_API_KEY');
-    if (apiKey.isEmpty && !kReleaseMode) {
-      debugPrint('WARNING: Gemini API Key is missing.');
+    _apiKey = const String.fromEnvironment('GEMINI_API_KEY');
+    if (_apiKey.isEmpty && !kReleaseMode) {
+      debugPrint(
+        'WARNING: Gemini API Key is missing. Put it in '
+        'secrets/gemini.local.json and run with '
+        '--dart-define-from-file=secrets/gemini.local.json.',
+      );
     }
 
     // Using gemini-2.5-flash (intentional upgrade over MD spec of 2.0-flash)
     _fastModel = GenerativeModel(
       model: 'gemini-2.5-flash',
-      apiKey: apiKey,
+      apiKey: _apiKey,
     );
   }
 
@@ -57,14 +61,24 @@ class GeminiService {
   // 2. CHAT SESSION PERSONA
   // ==========================================
   Future<String> generateChatResponse(
-    List<Map<String, dynamic>> messages, 
+    List<Map<String, dynamic>> messages,
     Map<String, dynamic> volunteer,
-    String? previousSummary
+    String? previousSummary,
   ) async {
     final systemPrompt = _buildSystemPrompt(volunteer, previousSummary);
-    
-    // Convert your Firestore message map to Gemini Content objects
-    final history = messages.map((m) {
+
+    if (messages.isEmpty) {
+      return "Sige, nandito lang ako kung kailangan mo ng kausap.";
+    }
+
+    final lastMessage = messages.last;
+    if (lastMessage['senderId'] != 'user') {
+      return "I'm here for you.";
+    }
+
+    // Gemini should receive prior turns as history and the latest user turn
+    // as the actual prompt, otherwise the last user message gets duplicated.
+    final history = messages.take(messages.length - 1).map((m) {
       final role = m['senderId'] == 'user' ? 'user' : 'model';
       return Content(role, [TextPart(m['text'] as String)]);
     }).toList();
@@ -73,21 +87,17 @@ class GeminiService {
       // Create a temporary model instance with the injected system instructions
       final personaModel = GenerativeModel(
         model: 'gemini-2.5-flash',
-        apiKey: String.fromEnvironment('GEMINI_API_KEY'),
+        apiKey: _apiKey,
         systemInstruction: Content.system(systemPrompt),
       );
 
       // Start chat with history
       final chat = personaModel.startChat(history: history);
-      
-      // We don't send a new message because the user's last message is already in the history.
-      // We just need the model to react to the history. 
-      // Workaround: remove the last user message from history and send it as the prompt.
-      if (history.isEmpty) return "Sige, nandito lang ako kung kailangan mo ng kausap.";
-      
-      final lastUserMessage = history.removeLast();
-      final response = await chat.sendMessage(lastUserMessage);
-      
+
+      final response = await chat.sendMessage(
+        Content.text(lastMessage['text'] as String),
+      );
+
       return response.text ?? "I'm here for you.";
     } catch (e) {
       debugPrint('Gemini Chat Error: $e');
