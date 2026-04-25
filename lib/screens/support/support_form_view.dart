@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SupportFormView extends StatefulWidget {
-  final VoidCallback onSubmit;
+  final ValueChanged<Map<String, dynamic>> onSubmit;
   final VoidCallback onNavigateToLibrary;
 
   const SupportFormView({
@@ -260,7 +260,7 @@ class _SupportFormViewState extends State<SupportFormView> {
 
   Widget _buildSubmitButton() {
     return GestureDetector(
-      onTap: widget.onSubmit,
+      onTap: () => widget.onSubmit(_buildIntakeForm()),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -288,5 +288,19 @@ class _SupportFormViewState extends State<SupportFormView> {
         ),
       ),
     );
+  }
+
+  Map<String, dynamic> _buildIntakeForm() {
+    return {
+      'moodScore': (_heartValue * 9).round() + 1,
+      'situationTags': [_normalizeTag(_selectedMind)],
+      'genderPreference': _selectedGender,
+      'supportType': _selectedHelp,
+      'lastSessionSummary': null,
+    };
+  }
+
+  String _normalizeTag(String value) {
+    return value.toLowerCase().replaceAll(' ', '-');
   }
 }

@@ -170,6 +170,51 @@ class SessionService {
     return (summaryId: summaryRef.id, geminiSummary: geminiSummary);
   }
 
+  /// Ends the session immediately without generating a handover summary.
+  Future<void> endSessionForce({
+    required String sessionId,
+    required String userId,
+  }) async {
+    final batch = _firestore.batch();
+
+    batch.update(_firestore.collection('users').doc(userId), {
+      'activeSessionId': null,
+    });
+
+    batch.update(_firestore.collection('sessions').doc(sessionId), {
+      'status': 'closed',
+      'endedAt': FieldValue.serverTimestamp(),
+      'endType': 'force',
+    });
+
+    await batch.commit();
+  }
+
+  /// Creates a moderation report tied to a volunteer and, when available,
+  /// the session the user just ended.
+  Future<void> createVolunteerReport({
+    required String userId,
+    required String volunteerId,
+    String? sessionId,
+    String? details,
+    String source = 'hard_end',
+  }) async {
+    final reportRef = _firestore.collection('reports').doc();
+    await reportRef.set({
+      'id': reportRef.id,
+      'type': 'volunteer',
+      'source': source,
+      'userId': userId,
+      'volunteerId': volunteerId,
+      'sessionId': sessionId,
+      'details': details != null && details.trim().isNotEmpty
+          ? details.trim()
+          : null,
+      'status': 'open',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   // ==========================================
   // POST-SESSION RATING
   // ==========================================

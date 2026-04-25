@@ -163,7 +163,10 @@ class _AppShellState extends State<_AppShell> {
         children: [
           const _PlaceholderScreen(label: 'Home'),
           const _PlaceholderScreen(label: 'Journal'),
-          SupportFlowScreen(onNavigateToLibrary: () => setState(() => _index = 3)),
+          SupportFlowScreen(
+            onNavigateToLibrary: () => setState(() => _index = 3),
+            onNavigateTab: (index) => setState(() => _index = index),
+          ),
           const ResourcesScreen(), // Library tab → Resources screen
         ],
       ),

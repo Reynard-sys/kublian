@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SupportMatchingView extends StatefulWidget {
-  final VoidCallback onMatchFound;
-
-  const SupportMatchingView({super.key, required this.onMatchFound});
+  const SupportMatchingView({super.key});
 
   @override
   State<SupportMatchingView> createState() => _SupportMatchingViewState();
@@ -22,10 +20,6 @@ class _SupportMatchingViewState extends State<SupportMatchingView>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
-
-    Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) widget.onMatchFound();
-    });
   }
 
   @override
