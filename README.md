@@ -6,6 +6,7 @@
 
 ## Table of Contents
 
+- [Getting Started (Local Development)](#getting-started-local-development)
 - [Overview](#overview)
 - [Target Audience & Roles](#target-audience--roles)
   - [Users](#users)
@@ -17,6 +18,148 @@
   - [Tiered Anonymity Protocol](#33-tiered-anonymity-protocol)
   - [Zero-Footprint Conversations](#34-volatile-messaging-zero-footprint-conversations)
 - [Conclusion](#conclusion)
+
+---
+
+## Getting Started (Local Development)
+
+Follow these steps to run Kublian on your local machine.
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) (Dart SDK is included)
+- [Android Studio](https://developer.android.com/studio) or [Xcode](https://developer.apple.com/xcode/) (for device/emulator)
+- A Google account to access Firebase and Google AI Studio
+
+Verify your Flutter setup before continuing:
+
+```bash
+flutter doctor
+```
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Reynard-sys/kublian.git
+cd kublian
+```
+
+---
+
+### 2. Install Dependencies
+
+```bash
+flutter pub get
+```
+
+---
+
+### 3. Set Up Your Gemini API Key
+
+Kublian uses **Google Gemini 2.5 Flash** for volunteer matching, chat persona, and session summaries. You need your own API key to run the AI features locally.
+
+**Get a free key:**
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click **"Create API key"** and copy it
+
+**Create the secrets file:**
+
+The file `secrets/gemini.local.json` is **git-ignored** and must be created manually. A template is already provided:
+
+```bash
+# Copy the example template
+cp secrets/gemini.local.json.example secrets/gemini.local.json
+```
+
+Then open `secrets/gemini.local.json` and replace the placeholder with your actual key:
+
+```json
+{
+  "GEMINI_API_KEY": "YOUR_GEMINI_API_KEY_HERE"
+}
+```
+
+> ⚠️ **Never commit this file.** It is already listed in `.gitignore` — keep it that way.
+
+---
+
+### 4. Firebase Configuration
+
+The Firebase project config (`lib/firebase_options.dart`) is already committed and works with the shared **Kublian** Firebase project. No extra setup is needed for the default dev environment.
+
+If you are setting up your **own Firebase project** (e.g., for a fork or staging environment):
+
+1. Install the [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/):
+   ```bash
+   dart pub global activate flutterfire_cli
+   ```
+2. Log in to Firebase:
+   ```bash
+   firebase login
+   ```
+3. Configure for your project:
+   ```bash
+   flutterfire configure
+   ```
+
+---
+
+### 5. Run the App
+
+Use the following command to run Kublian with your Gemini API key injected at build time:
+
+```bash
+flutter run --dart-define-from-file=secrets/gemini.local.json
+```
+
+To target a specific device:
+
+```bash
+# List available devices
+flutter devices
+
+# Run on a specific device
+flutter run -d <device-id> --dart-define-from-file=secrets/gemini.local.json
+```
+
+**Example for Android emulator:**
+```bash
+flutter run -d emulator-5554 --dart-define-from-file=secrets/gemini.local.json
+```
+
+> 💡 **VS Code users:** Add the following to your `.vscode/launch.json` so you don't have to type the flag every time:
+> ```json
+> {
+>   "version": "0.2.0",
+>   "configurations": [
+>     {
+>       "name": "Kublian (dev)",
+>       "request": "launch",
+>       "type": "dart",
+>       "args": ["--dart-define-from-file=secrets/gemini.local.json"]
+>     }
+>   ]
+> }
+> ```
+
+---
+
+### 6. (Optional) Deploy Cloud Functions
+
+The three Firebase Cloud Functions (message deletion, escalation alerts, account data purge) live in `kublian-functions/functions/`.
+
+```bash
+cd kublian-functions
+npm install
+firebase deploy --only functions
+```
+
+> Requires the [Firebase CLI](https://firebase.google.com/docs/cli) and appropriate project permissions.
 
 ---
 
