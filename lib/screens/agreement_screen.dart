@@ -25,22 +25,17 @@ class _AgreementScreenState extends State<AgreementScreen> {
             children: [
               const SizedBox(height: 48),
               Center(
-                child: Image.asset(
-                  'assets/images/kublian_logo.png',
+                child: Container(
                   width: 56,
                   height: 56,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.white.withOpacity(0.18),
-                    ),
-                    child: const Icon(
-                      Icons.spa_outlined,
-                      color: Colors.white,
-                      size: 28,
-                    ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white.withOpacity(0.18),
+                  ),
+                  child: const Icon(
+                    Icons.spa_outlined,
+                    color: Colors.white,
+                    size: 28,
                   ),
                 ),
               ),

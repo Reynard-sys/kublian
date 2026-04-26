@@ -266,22 +266,17 @@ class _UserFormScreenState extends State<UserFormScreen> {
   }
 
   Widget _buildLogo() {
-    return Image.asset(
-      'assets/images/kublian_logo.png',
+    return Container(
       width: 56,
       height: 56,
-      errorBuilder: (_, __, ___) => Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white.withOpacity(0.18),
-        ),
-        child: const Icon(
-          Icons.spa_outlined,
-          color: Colors.white,
-          size: 28,
-        ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(0.18),
+      ),
+      child: const Icon(
+        Icons.spa_outlined,
+        color: Colors.white,
+        size: 28,
       ),
     );
   }
