@@ -22,7 +22,6 @@ class ChatScreen extends StatefulWidget {
   final String? sessionId;
   final String? userId;
   final ValueChanged<int>? onNavigateTab;
-  final VoidCallback? onBack;
   final VoidCallback? onSessionEnded;
 
   const ChatScreen({
@@ -33,7 +32,6 @@ class ChatScreen extends StatefulWidget {
     this.sessionId,
     this.userId,
     this.onNavigateTab,
-    this.onBack,
     this.onSessionEnded,
   });
 
@@ -141,32 +139,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildTopBar() {
     return Row(
       children: [
-        InkWell(
-          onTap: _handleBack,
-          borderRadius: BorderRadius.circular(999),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 16,
-                  color: Colors.white,
-                ),
-                SizedBox(width: 6),
-                Text(
-                  'Back',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
         const Spacer(),
         _buildSessionEndButton(
           label: 'Soft End',
@@ -487,15 +459,6 @@ class _ChatScreenState extends State<ChatScreen> {
     if (mounted) {
       setState(() {});
     }
-  }
-
-  void _handleBack() {
-    if (widget.onBack != null) {
-      widget.onBack!.call();
-      return;
-    }
-
-    Navigator.of(context).maybePop();
   }
 
   Future<void> _handleSoftEndSession() async {

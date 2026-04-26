@@ -34,6 +34,22 @@ class JournalService {
       'moodTag': moodTag,
       'text': text,
       'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> updateEntry({
+    required String uid,
+    required String entryId,
+    required int moodScore,
+    required String moodTag,
+    required String text,
+  }) async {
+    await _journalRef(uid).doc(entryId).update({
+      'moodScore': moodScore,
+      'moodTag': moodTag,
+      'text': text,
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 

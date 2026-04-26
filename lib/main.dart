@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:kublian/core/services/user_service.dart';
+import 'package:kublian/screens/journal_screen.dart';
+import 'package:kublian/screens/resources_screen.dart';
+import 'package:kublian/screens/support_flow_screen.dart';
+import 'package:kublian/widgets/resources/resources_header.dart'
+    show kResBg, kResPrimary;
+
 import 'firebase_options.dart';
 import 'screens/agreement_screen.dart';
 import 'screens/signin_screen.dart';
 import 'screens/user_form_screen.dart';
-import 'package:kublian/screens/resources_screen.dart';
-import 'package:kublian/screens/support_flow_screen.dart';
-import 'package:kublian/widgets/resources/resources_header.dart'
-    show kResPrimary, kResBg;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,10 +43,8 @@ class KublianApp extends StatelessWidget {
             return const _SplashScreen();
           }
           if (snapshot.hasData) {
-            // Logged in — go to main app shell
             return _AuthenticatedFlow(key: ValueKey(snapshot.data!.uid));
           }
-          // Not logged in — show sign-in screen
           return const SignInScreen();
         },
       ),
@@ -52,7 +52,6 @@ class KublianApp extends StatelessWidget {
   }
 }
 
-/// Bottom navigation shell — grows as screens are built.
 class _AuthenticatedFlow extends StatefulWidget {
   const _AuthenticatedFlow({super.key});
 
@@ -129,30 +128,7 @@ class _AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<_AppShell> {
-  int _index = 3; // Start on Library tab for demo
-
-  static const _items = [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home_outlined),
-      activeIcon: Icon(Icons.home),
-      label: 'Home',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.book_outlined),
-      activeIcon: Icon(Icons.book),
-      label: 'Journal',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.chat_bubble_outline),
-      activeIcon: Icon(Icons.chat_bubble),
-      label: 'Support',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.local_library_outlined),
-      activeIcon: Icon(Icons.local_library),
-      label: 'Resources',
-    ),
-  ];
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -161,18 +137,17 @@ class _AppShellState extends State<_AppShell> {
       body: IndexedStack(
         index: _index,
         children: [
-          const _PlaceholderScreen(label: 'Home'),
-          const _PlaceholderScreen(label: 'Journal'),
           SupportFlowScreen(
-            onNavigateToLibrary: () => setState(() => _index = 3),
+            onNavigateToLibrary: () => setState(() => _index = 1),
             onNavigateTab: (index) => setState(() => _index = index),
           ),
-          const ResourcesScreen(), // Resources tab → Resources screen
+          const ResourcesScreen(),
+          const JournalScreen(),
         ],
       ),
       bottomNavigationBar: _CustomBottomNav(
         currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+        onTap: (index) => setState(() => _index = index),
       ),
     );
   }
@@ -182,15 +157,29 @@ class _CustomBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const _CustomBottomNav({required this.currentIndex, required this.onTap});
+  const _CustomBottomNav({
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     const items = [
-      (icon: Icons.home_outlined, activeIcon: Icons.home_outlined, label: 'Home'),
-      (icon: Icons.menu_book_outlined, activeIcon: Icons.menu_book_outlined, label: 'Journal'),
-      (icon: Icons.forum_outlined, activeIcon: Icons.forum_outlined, label: 'Support'),
-      (icon: Icons.local_library_outlined, activeIcon: Icons.local_library_outlined, label: 'Resources'),
+      (
+        icon: Icons.forum_outlined,
+        activeIcon: Icons.forum_outlined,
+        label: 'Support',
+      ),
+      (
+        icon: Icons.local_library_outlined,
+        activeIcon: Icons.local_library_outlined,
+        label: 'Library',
+      ),
+      (
+        icon: Icons.menu_book_outlined,
+        activeIcon: Icons.menu_book_outlined,
+        label: 'Journal',
+      ),
     ];
 
     return Container(
@@ -222,26 +211,42 @@ class _CustomBottomNav extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF115E59) : Colors.transparent,
+                  color:
+                      isSelected ? const Color(0xFF115E59) : Colors.transparent,
                   borderRadius: BorderRadius.circular(32),
-                  border: isSelected ? Border.all(color: const Color(0xFF14B8A6).withValues(alpha: 0.3), width: 1) : null,
+                  border: isSelected
+                      ? Border.all(
+                          color: const Color(
+                            0xFF14B8A6,
+                          ).withValues(alpha: 0.3),
+                          width: 1,
+                        )
+                      : null,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       isSelected ? item.activeIcon : item.icon,
-                      color: isSelected ? const Color(0xFFCCFBF1) : const Color(0xFF0F766E),
+                      color: isSelected
+                          ? const Color(0xFFCCFBF1)
+                          : const Color(0xFF0F766E),
                       size: 24,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       item.label,
                       style: TextStyle(
-                        color: isSelected ? const Color(0xFFCCFBF1) : const Color(0xFF0F766E),
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        color: isSelected
+                            ? const Color(0xFFCCFBF1)
+                            : const Color(0xFF0F766E),
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                         fontFamily: 'Newsreader',
                         fontSize: 13,
                         letterSpacing: 0.5,
@@ -258,7 +263,6 @@ class _CustomBottomNav extends StatelessWidget {
   }
 }
 
-/// Splash shown while Firebase auth state is resolving.
 class _SplashScreen extends StatelessWidget {
   const _SplashScreen();
 
@@ -282,26 +286,6 @@ class _SplashScreen extends StatelessWidget {
             SizedBox(height: 16),
             CircularProgressIndicator(color: Color(0xFF6B5EA8)),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Temporary placeholder — remove once real screens are wired in.
-class _PlaceholderScreen extends StatelessWidget {
-  final String label;
-  const _PlaceholderScreen({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFCFFEE), // Matches global background kResBg
-      body: Center(
-        child: Text(
-          'Kublian — $label\n(screen coming soon)',
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Color(0xFF016A66), fontSize: 18), // Matches dark green kResPrimary
         ),
       ),
     );
