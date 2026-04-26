@@ -150,7 +150,7 @@ class _AppShellState extends State<_AppShell> {
     BottomNavigationBarItem(
       icon: Icon(Icons.local_library_outlined),
       activeIcon: Icon(Icons.local_library),
-      label: 'Library',
+      label: 'Resources',
     ),
   ];
 
@@ -167,7 +167,7 @@ class _AppShellState extends State<_AppShell> {
             onNavigateToLibrary: () => setState(() => _index = 3),
             onNavigateTab: (index) => setState(() => _index = index),
           ),
-          const ResourcesScreen(), // Library tab → Resources screen
+          const ResourcesScreen(), // Resources tab → Resources screen
         ],
       ),
       bottomNavigationBar: _CustomBottomNav(
@@ -190,7 +190,7 @@ class _CustomBottomNav extends StatelessWidget {
       (icon: Icons.home_outlined, activeIcon: Icons.home_outlined, label: 'Home'),
       (icon: Icons.menu_book_outlined, activeIcon: Icons.menu_book_outlined, label: 'Journal'),
       (icon: Icons.forum_outlined, activeIcon: Icons.forum_outlined, label: 'Support'),
-      (icon: Icons.local_library_outlined, activeIcon: Icons.local_library_outlined, label: 'Library'),
+      (icon: Icons.local_library_outlined, activeIcon: Icons.local_library_outlined, label: 'Resources'),
     ];
 
     return Container(

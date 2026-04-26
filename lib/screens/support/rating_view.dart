@@ -491,7 +491,7 @@ class _BottomNavBar extends StatelessWidget {
       (icon: Icons.home_outlined, label: 'Home'),
       (icon: Icons.menu_book_outlined, label: 'Journal'),
       (icon: Icons.forum_outlined, label: 'Support'),
-      (icon: Icons.local_library_outlined, label: 'Library'),
+      (icon: Icons.local_library_outlined, label: 'Resources'),
     ];
 
     return Container(
