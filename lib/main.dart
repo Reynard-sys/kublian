@@ -173,7 +173,7 @@ class _CustomBottomNav extends StatelessWidget {
       (
         icon: Icons.local_library_outlined,
         activeIcon: Icons.local_library_outlined,
-        label: 'Library',
+        label: 'Resources',
       ),
       (
         icon: Icons.menu_book_outlined,
