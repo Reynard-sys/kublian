@@ -160,7 +160,6 @@ class _SupportFlowScreenState extends State<SupportFlowScreen> {
             sessionId: sessionId,
             userId: user.uid,
             onNavigateTab: widget.onNavigateTab,
-            onBack: () => Navigator.of(context).pop(),
             onSessionEnded: () => Navigator.of(context).pop(true),
           ),
         ),

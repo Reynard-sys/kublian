@@ -59,7 +59,7 @@ class _RatingViewState extends State<RatingView> {
       child: Scaffold(
         backgroundColor: _kRatingCream,
         bottomNavigationBar: _BottomNavBar(
-          currentIndex: 2,
+          currentIndex: 0,
           onTap: _navigateToTab,
         ),
         body: SafeArea(
@@ -81,7 +81,7 @@ class _RatingViewState extends State<RatingView> {
                       TextButton(
                         onPressed: () => _navigateToTab(0),
                         child: const Text(
-                          'Back to Home',
+                          'Back to Support',
                           style: TextStyle(
                             color: _kRatingInk,
                             fontSize: 12,
@@ -481,10 +481,9 @@ class _BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).padding.bottom;
     const items = [
-      (icon: Icons.home_outlined, label: 'Home'),
-      (icon: Icons.menu_book_outlined, label: 'Journal'),
       (icon: Icons.forum_outlined, label: 'Support'),
       (icon: Icons.local_library_outlined, label: 'Library'),
+      (icon: Icons.menu_book_outlined, label: 'Journal'),
     ];
 
     return Container(
