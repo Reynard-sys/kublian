@@ -350,13 +350,13 @@ class _JournalScreenState extends State<JournalScreen> {
                   runSpacing: 8,
                   children: [
                     _buildEntryChip(
-                      icon: Icons.favorite_rounded,
+                      icon: _getMoodIcon(moodTag),
                       label: moodTag,
                       color: moodColor,
                       foreground: Colors.white,
                     ),
                     _buildEntryChip(
-                      icon: Icons.tune_rounded,
+                      icon: moodScore >= 6 ? Icons.sentiment_satisfied_rounded : Icons.sentiment_dissatisfied_rounded,
                       label: '$moodScore/10',
                       color: _kJournalPaper,
                       foreground: _kJournalInk,
@@ -754,21 +754,41 @@ class _JournalComposerSheetState extends State<_JournalComposerSheet> {
                     ),
                   ],
                 ),
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTrackColor: _kJournalTeal,
-                    inactiveTrackColor: _kJournalSage,
-                    thumbColor: _kJournalTeal,
-                    overlayColor: _kJournalTeal.withValues(alpha: 0.1),
-                  ),
-                  child: Slider(
-                    value: _moodScore.toDouble(),
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    onChanged: (value) {
-                      setState(() => _moodScore = value.round());
-                    },
+                Row(
+                  children: [
+                    const Icon(Icons.sentiment_very_dissatisfied, color: Color(0xFFC62828)),
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 8,
+                          activeTrackColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), (_moodScore - 1) / 9),
+                          inactiveTrackColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), (_moodScore - 1) / 9)?.withValues(alpha: 0.3),
+                          thumbColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), (_moodScore - 1) / 9),
+                          overlayColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), (_moodScore - 1) / 9)?.withValues(alpha: 0.1),
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                        ),
+                        child: Slider(
+                          value: _moodScore.toDouble(),
+                          min: 1,
+                          max: 10,
+                          divisions: 9,
+                          onChanged: (value) {
+                            setState(() => _moodScore = value.round());
+                          },
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.sentiment_very_satisfied, color: Color(0xFF016A66)),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Heavy', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: _kJournalInk)),
+                      Text('Peaceful', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: _kJournalInk)),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -811,13 +831,24 @@ class _JournalComposerSheetState extends State<_JournalComposerSheet> {
           color: isSelected ? _kJournalTeal : _kJournalPaper,
           borderRadius: BorderRadius.circular(999),
         ),
-        child: Text(
-          option,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: isSelected ? Colors.white : _kJournalInk,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _getMoodIcon(option),
+              size: 14,
+              color: isSelected ? Colors.white : _kJournalInk,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              option,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: isSelected ? Colors.white : _kJournalInk,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -852,4 +883,35 @@ class _JournalDraft {
     required this.moodTag,
     required this.moodScore,
   });
+}
+
+IconData _getMoodIcon(String mood) {
+  switch (mood.toLowerCase()) {
+    case 'heavy':
+      return Icons.cloud_rounded;
+    case 'anxious':
+      return Icons.water_drop_rounded;
+    case 'drained':
+      return Icons.battery_0_bar_rounded;
+    case 'reflective':
+      return Icons.auto_awesome_rounded;
+    case 'hopeful':
+      return Icons.wb_sunny_rounded;
+    case 'calm':
+      return Icons.spa_rounded;
+    case 'joyful':
+      return Icons.celebration_rounded;
+    case 'grateful':
+      return Icons.favorite_rounded;
+    case 'frustrated':
+      return Icons.bolt_rounded;
+    case 'overwhelmed':
+      return Icons.waves_rounded;
+    case 'content':
+      return Icons.coffee_rounded;
+    case 'energetic':
+      return Icons.electric_bolt_rounded;
+    default:
+      return Icons.favorite_rounded;
+  }
 }

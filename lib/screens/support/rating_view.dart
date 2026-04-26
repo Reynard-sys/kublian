@@ -65,10 +65,6 @@ class _RatingViewState extends State<RatingView> {
         body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                child: _buildHeader(),
-              ),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
@@ -97,29 +93,6 @@ class _RatingViewState extends State<RatingView> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        Image.asset(
-          'assets/images/kublian_logo.png',
-          width: 18,
-          height: 22,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(width: 10),
-        Text(
-          'Kublian',
-          style: GoogleFonts.newsreader(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            fontStyle: FontStyle.italic,
-            color: _kRatingInk,
-          ),
-        ),
-      ],
     );
   }
 
