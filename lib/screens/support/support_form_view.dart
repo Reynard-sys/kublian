@@ -142,15 +142,15 @@ class _SupportFormViewState extends State<SupportFormView> {
       children: [
         Row(
           children: [
-            const Icon(Icons.sentiment_very_dissatisfied, color: Color(0xFF1A2E2E)),
+            const Icon(Icons.sentiment_very_dissatisfied, color: Color(0xFFC62828)), // Hard Red
             Expanded(
               child: SliderTheme(
                 data: SliderThemeData(
                   trackHeight: 8,
-                  activeTrackColor: const Color(0xFF114D4D),
-                  inactiveTrackColor: const Color(0xFF114D4D),
-                  thumbColor: const Color(0xFF114D4D),
-                  overlayColor: const Color(0xFF114D4D).withValues(alpha: 0.1),
+                  activeTrackColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), _heartValue),
+                  inactiveTrackColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), _heartValue)?.withValues(alpha: 0.3),
+                  thumbColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), _heartValue),
+                  overlayColor: Color.lerp(const Color(0xFFC62828), const Color(0xFF016A66), _heartValue)?.withValues(alpha: 0.1),
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
                 ),
                 child: Slider(
@@ -159,7 +159,7 @@ class _SupportFormViewState extends State<SupportFormView> {
                 ),
               ),
             ),
-            const Icon(Icons.sentiment_very_satisfied, color: Color(0xFFD05036)), // Reddish smile
+            const Icon(Icons.sentiment_very_satisfied, color: Color(0xFF016A66)), // Dark Green
           ],
         ),
         const Padding(

@@ -122,7 +122,7 @@ class _HotlineCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                   horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: kResAccent,
+                color: const Color(0xFFC62828), // Deep red for urgent call to action
                 borderRadius: BorderRadius.circular(50),
               ),
               child: const Row(children: [
