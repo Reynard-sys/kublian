@@ -36,6 +36,7 @@ class _SupportFlowScreenState extends State<SupportFlowScreen> {
   Map<String, dynamic>? _matchedVolunteer;
   Map<String, dynamic>? _userProfile;
   bool _isStartingSession = false;
+  int _formKeyId = 0;
 
   void _resetFlow() {
     _currentState = SupportState.form;
@@ -43,6 +44,7 @@ class _SupportFlowScreenState extends State<SupportFlowScreen> {
     _matchedVolunteer = null;
     _userProfile = null;
     _isStartingSession = false;
+    _formKeyId++;
   }
 
   void _startMatching(Map<String, dynamic> intakeForm) {
@@ -195,7 +197,7 @@ class _SupportFlowScreenState extends State<SupportFlowScreen> {
     switch (_currentState) {
       case SupportState.form:
         return SupportFormView(
-          key: const ValueKey('form'),
+          key: ValueKey('form_$_formKeyId'),
           onSubmit: _startMatching,
           onNavigateToLibrary: widget.onNavigateToLibrary,
         );

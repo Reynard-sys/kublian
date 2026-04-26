@@ -152,7 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _buildSessionEndButton(
           label: 'Hard End',
           icon: Icons.close_rounded,
-          backgroundColor: _kChatAlert,
+          backgroundColor: const Color(0xFFC62828), // Deep Red
           foregroundColor: Colors.white,
           showProgress: _isEndingSession && _isHardEnding,
           onPressed: _handleHardEndSession,

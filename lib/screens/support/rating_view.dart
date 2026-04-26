@@ -404,6 +404,13 @@ class _RatingViewState extends State<RatingView> {
           ),
         ),
       );
+
+      // Auto-navigate back to Support tab after a brief delay
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          _navigateToTab(2); // 2 is the Support tab
+        }
+      });
     } catch (e) {
       if (!mounted) {
         return;
