@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "1018408908061",
+    "project_id": "kublian",
+    "storage_bucket": "kublian.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018408908061:android:0d5d90789cf8c4830a5df4",
+        "android_client_info": {
+          "package_name": "com.example.kublian"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018408908061-cjm7o4r5kcas77fl4qrq1djtoog86ru7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBalJX_JV-GlRXfsKilfcjPDJNAkRKMuS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018408908061-cjm7o4r5kcas77fl4qrq1djtoog86ru7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018408908061:android:fbcdf57882ece5f80a5df4",
+        "android_client_info": {
+          "package_name": "com.resisthounds.kublian"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018408908061-feikbd3r37kihd3g8ngoh5n3e0jihjcg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.resisthounds.kublian",
+            "certificate_hash": "c93b6935a84211bc8fb6a5427a8eac13db296318"
+          }
+        },
+        {
+          "client_id": "1018408908061-cjm7o4r5kcas77fl4qrq1djtoog86ru7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBalJX_JV-GlRXfsKilfcjPDJNAkRKMuS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018408908061-cjm7o4r5kcas77fl4qrq1djtoog86ru7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
