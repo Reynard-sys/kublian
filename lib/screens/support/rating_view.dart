@@ -462,8 +462,7 @@ class _BottomNavBar extends StatelessWidget {
     final bottomInset = MediaQuery.of(context).padding.bottom;
     const items = [
       (icon: Icons.forum_outlined, label: 'Support'),
-      (icon: Icons.local_library_outlined, label: 'Library'),
-      (icon: Icons.menu_book_outlined, label: 'Journal'),
+      (icon: Icons.local_library_outlined, label: 'Resources'),
     ];
 
     return Container(
